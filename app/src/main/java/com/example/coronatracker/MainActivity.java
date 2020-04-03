@@ -2,6 +2,7 @@ package com.example.coronatracker;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -9,7 +10,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,7 +23,6 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
 
-
     TextView totalCaseView;
     TextView totalDeathsView;
     TextView confirmedView;
@@ -31,27 +30,26 @@ public class MainActivity extends AppCompatActivity {
     TextView recoveredView;
     TextView countryView;
     TextView updateView;
-    Spinner spinner;
+
+    public static Double latitude;
+    public static Double longitude;
 
 
-    JSONArray jsonArray;
-    JSONObject jsonObject;
-    JSONObject jsonObject1;
-    JSONObject jsonObject2;
-    JSONObject jsonObject3;
+   public JSONArray jsonArray;
+    public JSONArray jsonMapArray;
+   public JSONObject jsonObject;
+   public JSONObject jsonMapobject;
+   public JSONObject jsonMapObject1;
+   public JSONObject jsonMapObject2;
+   public JSONObject jsonObject1;
+   public JSONObject jsonObject2;
+   public JSONObject jsonObject3;
+   public JSONObject jsonObject4;
 
 
-  /* String  country ;
-     String lastUp ;
-     String latest2;
-     String confirmed;
-     String deaths ;
-     String recovered;
-     Integer jid;
-
-     */
-    ArrayList<String> listItems=new ArrayList<>();
-    ArrayList<String> listDeath=new ArrayList<>();
+    public static ArrayList<String> listItems=new ArrayList<>();
+    public static ArrayList<Double> latitudeItems=new ArrayList<>();
+    public static ArrayList<Double> longitudeItems=new ArrayList<>();
 
 
     @Override
@@ -75,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(),"Selected"+position,Toast.LENGTH_LONG).show();
+
                 if(position!=0){
                     setCoronaVirusDetailInfoToView(position);
                 }else {
@@ -85,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                Toast.makeText(getApplicationContext(),"Selected"+parent,Toast.LENGTH_LONG).show();
+
 
             }
         });
@@ -108,35 +106,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
-
-
-
-
-
-
     public void uptade(View view){
 
-       /* DownloadData downloadData = new DownloadData();
-
-        try {
-
-            String url = "http://coronavirus-tracker-api.herokuapp.com/v2/locations"  ;
-
-
-            downloadData.execute(url);
-        }catch (Exception e){
-
-        }*/
-
+        Intent intent = new Intent(MainActivity.this,CoronaTrackerMapsActivity.class);
+        startActivity(intent);
 
 
 
     }
 
 
-    private  class DownloadData extends AsyncTask<String,Void,String>{
+    public class DownloadData extends AsyncTask<String,Void,String>{
         ArrayList<String> list;
     protected void onPreExecute(){
         super.onPreExecute();
@@ -194,18 +174,42 @@ public class MainActivity extends AppCompatActivity {
                 totalCaseView.setText("Coronavirus Cases : " + totalCases);
 
                 String idlocation = jsonObject.getString("locations");
+
                  jsonArray = new JSONArray(idlocation);
 
                  for(int i=0;i<jsonArray.length();i++){
                      JSONObject jsonObject=jsonArray.getJSONObject(i);
                      String   country = jsonObject.getString("country");
                      listItems.add(jsonObject.getString("country"));
+
                  }
             }catch (Exception e){
-
+                e.printStackTrace();
             }
 
+         try {
+             jsonMapobject = new JSONObject(s);
+             String idcoordinate = jsonMapobject.getString("locations");
+             jsonMapArray = new JSONArray(idcoordinate);
+
+             for (int a=0; a<jsonMapArray.length();a++){
+                 JSONObject jsonObject=jsonArray.getJSONObject(a);
+                 String  countryCoordinates = jsonObject.getString("coordinates");
+                 JSONObject  jsonCoordinateObject = new JSONObject(countryCoordinates);
+         //        latitude = jsonCoordinateObject.getDouble("latitude");
+         //        longitude = jsonCoordinateObject.getDouble("longitude");
+                 latitudeItems.add(jsonCoordinateObject.getDouble("latitude"));
+                 longitudeItems.add(jsonCoordinateObject.getDouble("longitude"));
+             }
+         }catch (Exception e){
+             e.printStackTrace();
+         }
+
+
+
+
         }
+
 
     }
 
@@ -220,11 +224,19 @@ public class MainActivity extends AppCompatActivity {
                 jsonObject2 = new JSONObject(id);
                 String       lastUp = jsonObject2.getString("last_updated");
                 String       latest2 = jsonObject2.getString("latest");
-                String      countryId = jsonObject2.getString("id");
+                String      countryPopulation = jsonObject2.getString("country_population");
+                String  countryCoordinates = jsonObject2.getString("coordinates");
                 jsonObject3 = new JSONObject(latest2);
                 String       confirmed = jsonObject3.getString("confirmed");
                 String      deaths = jsonObject3.getString("deaths");
                 String      recovered = jsonObject3.getString("recovered");
+
+//              for (int a=0;a<jsonObject4.length();a++){
+//                  latitude = jsonObject4.getDouble("latitude");
+//                  longitude = jsonObject4.getDouble("longitude");
+//                  System.out.println("deneme"+latitude);
+//              }
+
 
 
                 setDetailInfosToTextView(
@@ -232,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                                 .setConfirmed(confirmed)
                                 .setDeaths(deaths)
                                 .setRecovered(recovered)
-                                .setId(countryId)
+                                .setId(countryPopulation)
                                 .build()
                         );
             }
@@ -248,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
         confirmedView.setText("Confirmed : " + coronaDetailInfoFields.getConfirmed());
         deathsView.setText("Deaths : " + coronaDetailInfoFields.getDeaths());
         recoveredView.setText("Recovered : " + coronaDetailInfoFields.getRecovered());
-        countryView.setText("Id:"+coronaDetailInfoFields.getId());
+        countryView.setText("Country Population:"+coronaDetailInfoFields.getId());
     }
 
 }
