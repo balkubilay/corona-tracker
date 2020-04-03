@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void uptade(View view){
+    public void showMap(View view){
 
         Intent intent = new Intent(MainActivity.this,CoronaTrackerMapsActivity.class);
         startActivity(intent);
