@@ -27,8 +27,14 @@ public class CoronaTrackerMapsActivity extends MainActivity implements OnMapRead
     private GoogleMap mMap;
     double[] latitudeMap;
     double[] longitudeMap;
-    int x =0;
-    Marker marker;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    LatLng latlng;
+    String countryInfos;
+    String casesInfos;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,16 +46,13 @@ public class CoronaTrackerMapsActivity extends MainActivity implements OnMapRead
 
         latitudeMap = new double[latitudeItems.size()];
         for (int i = 0; i < latitudeMap.length; i++) {
-            latitudeMap[i] = latitudeItems.get(i).doubleValue();  // java 1.4 style
-            // or:
-            latitudeMap[i] = latitudeItems.get(i);                // java 1.5+ style (outboxing)
+            latitudeMap[i] = latitudeItems.get(i);
         }
         longitudeMap = new double[longitudeItems.size()];
         for (int i = 0; i < longitudeMap.length; i++) {
-            longitudeMap[i] = longitudeItems.get(i).doubleValue();  // java 1.4 style
-            // or:
-            longitudeMap[i] = longitudeItems.get(i);                // java 1.5+ style (outboxing)
+            longitudeMap[i] = longitudeItems.get(i);
         }
+
 
     }
 
@@ -57,26 +60,25 @@ public class CoronaTrackerMapsActivity extends MainActivity implements OnMapRead
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        List<LatLng> points=new ArrayList<LatLng>();
-        String country = TextUtils.join("-", listItems);
-        for (int i = 0 ; i < latitudeMap.length; i++){
-            points.add(new LatLng(latitudeMap[i],longitudeMap[i]));
-           if (x != 249 ){
-               LatLng latlng = points.get(x);
-            mMap.addMarker(new MarkerOptions().position(latlng));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
-            x++;
-
-           }
+        List<LatLng> points = new ArrayList<LatLng>();
+        List<String> detailsCountry = new ArrayList<>();
+        List<String> detailsCases = new ArrayList<>();
+        for (int i = 0; i < latitudeMap.length; i++) {
+            points.add(new LatLng(latitudeMap[i], longitudeMap[i]));
+            detailsCountry.add(new String(countryForMapItems.get(i)));
+            detailsCases.add(new String(casesForMapItems.get(i)));
+            if (x != 249) {
+                latlng = points.get(x);
+                countryInfos = detailsCountry.get(y);
+                casesInfos = detailsCases.get(z);
+                mMap.addMarker(new MarkerOptions().position(latlng).title(countryInfos).snippet("Cases:" + casesInfos));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+                x++;
+                y++;
+                z++;
+            }
 
 
         }
-
-
-
-
-  //      LatLng sydney = new LatLng(-34, 151);
-   //     mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-
     }
 }

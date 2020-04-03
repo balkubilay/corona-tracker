@@ -6,6 +6,7 @@ public class CoronaDetailInfoFields{
     private String deaths;
     private String recovered;
     private String id;
+    private String country;
 
     CoronaDetailInfoFields(CoronaDetailInfoFieldsBuilder coronaDetailInfoFieldsBuilder) {
         this.lastUp=coronaDetailInfoFieldsBuilder.lastUp;
@@ -13,6 +14,7 @@ public class CoronaDetailInfoFields{
         this.deaths=coronaDetailInfoFieldsBuilder.deaths;
         this.recovered=coronaDetailInfoFieldsBuilder.recovered;
         this.id=coronaDetailInfoFieldsBuilder.id;
+        this.country=coronaDetailInfoFieldsBuilder.country;
     }
 
     static class CoronaDetailInfoFieldsBuilder{
@@ -21,6 +23,12 @@ public class CoronaDetailInfoFields{
         String deaths;
         String recovered;
         String id;
+        String country;
+
+        public CoronaDetailInfoFieldsBuilder setCountry(String country){
+            this.country=country;
+            return this;
+        }
 
         public CoronaDetailInfoFieldsBuilder setId(String id){
             this.id=id;
@@ -50,6 +58,14 @@ public class CoronaDetailInfoFields{
         public CoronaDetailInfoFields build(){
             return new CoronaDetailInfoFields(this);
         }
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public String getLastUp() {

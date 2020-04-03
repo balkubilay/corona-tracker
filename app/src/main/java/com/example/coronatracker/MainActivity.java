@@ -33,7 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static Double latitude;
     public static Double longitude;
-
+   public static String deathsForMap;
+   public static String countryForMap;
+    public static String casesForMap;
 
    public JSONArray jsonArray;
     public JSONArray jsonMapArray;
@@ -50,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<String> listItems=new ArrayList<>();
     public static ArrayList<Double> latitudeItems=new ArrayList<>();
     public static ArrayList<Double> longitudeItems=new ArrayList<>();
+    public static ArrayList<String > countryForMapItems=new ArrayList<>();
+    public static ArrayList<String > casesForMapItems=new ArrayList<>();
 
 
     @Override
@@ -181,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
                      JSONObject jsonObject=jsonArray.getJSONObject(i);
                      String   country = jsonObject.getString("country");
                      listItems.add(jsonObject.getString("country"));
+                     countryForMapItems.add(jsonObject.getString("country"));
 
                  }
             }catch (Exception e){
@@ -196,14 +201,25 @@ public class MainActivity extends AppCompatActivity {
                  JSONObject jsonObject=jsonArray.getJSONObject(a);
                  String  countryCoordinates = jsonObject.getString("coordinates");
                  JSONObject  jsonCoordinateObject = new JSONObject(countryCoordinates);
-         //        latitude = jsonCoordinateObject.getDouble("latitude");
-         //        longitude = jsonCoordinateObject.getDouble("longitude");
                  latitudeItems.add(jsonCoordinateObject.getDouble("latitude"));
                  longitudeItems.add(jsonCoordinateObject.getDouble("longitude"));
              }
          }catch (Exception e){
              e.printStackTrace();
-         }
+         } try {
+                jsonMapobject = new JSONObject(s);
+                String idcases = jsonMapobject.getString("locations");
+                jsonMapArray = new JSONArray(idcases);
+
+                for (int a=0; a<jsonMapArray.length();a++){
+                    JSONObject jsonObject=jsonArray.getJSONObject(a);
+                    String  coronaVırusConfirmedForMap = jsonObject.getString("latest");
+                    JSONObject  jsonConfirmedObject = new JSONObject(coronaVırusConfirmedForMap);
+                    casesForMapItems.add(jsonConfirmedObject.getString("confirmed"));
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
 
 
 
@@ -223,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
                 String id = jsonArray.getString(i-1);
                 jsonObject2 = new JSONObject(id);
                 String       lastUp = jsonObject2.getString("last_updated");
+                String       countryMap = jsonObject2.getString("country");
                 String       latest2 = jsonObject2.getString("latest");
                 String      countryPopulation = jsonObject2.getString("country_population");
                 String  countryCoordinates = jsonObject2.getString("coordinates");
@@ -231,12 +248,9 @@ public class MainActivity extends AppCompatActivity {
                 String      deaths = jsonObject3.getString("deaths");
                 String      recovered = jsonObject3.getString("recovered");
 
-//              for (int a=0;a<jsonObject4.length();a++){
-//                  latitude = jsonObject4.getDouble("latitude");
-//                  longitude = jsonObject4.getDouble("longitude");
-//                  System.out.println("deneme"+latitude);
-//              }
-
+                deathsForMap = deaths;
+                countryForMap = countryMap;
+                casesForMap = confirmed;
 
 
                 setDetailInfosToTextView(
@@ -245,8 +259,11 @@ public class MainActivity extends AppCompatActivity {
                                 .setDeaths(deaths)
                                 .setRecovered(recovered)
                                 .setId(countryPopulation)
+                                .setCountry(countryMap)
                                 .build()
                         );
+
+
             }
 
         }catch (Exception e){
